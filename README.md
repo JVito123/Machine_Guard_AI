@@ -8,7 +8,7 @@ Proyek tugas mata kuliah IoT, kelompok 16.
 
 *Dashboard dalam kondisi normal (tangkapan layar mode pratinjau offline).*
 
-- **Coba langsung di browser:** [link GitHub Pages]
+- **Coba langsung di browser:** https://jvito123.github.io/Machine_Guard_AI/
 - **Panduan mencoba:** [docs/panduan-mencoba.md](docs/panduan-mencoba.md)
 - **Video demo:** [link video]
 
