@@ -2,7 +2,7 @@
 
 Sistem pemantauan kondisi motor listrik virtual. Dua edge device saling bertukar data lewat MQTT di cloud, lalu model machine learning menilai apakah pola data motor masih normal. Kalau gangguan sampai di tingkat tinggi, mesin dimatikan otomatis.
 
-Proyek tugas mata kuliah [Mata kuliah], kelompok [Nama kelompok].
+Proyek tugas mata kuliah IoT, kelompok 16.
 
 ![Tampilan dashboard MachineGuard](docs/img/dashboard-normal.png)
 
@@ -185,8 +185,8 @@ Daftar lengkapnya ada di [panduan mencoba](docs/panduan-mencoba.md#kalau-ada-mas
 
 | Nama | NIM |
 |---|---|
-| [Nama] | [NIM] |
-| [Nama] | [NIM] |
-| [Nama] | [NIM] | 
+| John Vito Gracielo Talaksoru | 24060125140241 |
+| Rajendra Ziven Abiseka | 24060125140241 |
+| Arkano Aqilla Tristanoza | 24060125130073 | 
 
 
