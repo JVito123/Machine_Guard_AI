@@ -1,0 +1,262 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>MachineGuard AI</title>
+<link rel="stylesheet" href="style.css">
+<script src="demo-engine.js" defer></script>
+<script src="app.js" defer></script>
+</head>
+<body data-state="s-wait">
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+ <symbol id="i-play" viewBox="0 0 24 24"><path d="M8 5.5v13l10.5-6.5z" fill="currentColor"/></symbol>
+ <symbol id="i-stop" viewBox="0 0 24 24"><rect x="6.5" y="6.5" width="11" height="11" rx="2" fill="currentColor"/></symbol>
+ <symbol id="i-reset" viewBox="0 0 24 24"><path d="M4.5 12a7.5 7.5 0 1 0 2.2-5.3M4.5 4.5v4h4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+ <symbol id="i-flask" viewBox="0 0 24 24"><path d="M9 3.5h6M10 3.5v5.5l-5 8.6A2 2 0 0 0 6.7 20.5h10.6a2 2 0 0 0 1.7-2.9L14 9V3.5M7.5 14h9" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+ <symbol id="i-sliders" viewBox="0 0 24 24"><path d="M4 7h9M17 7h3M4 17h3M11 17h9" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="15" cy="7" r="2.2" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="9" cy="17" r="2.2" fill="none" stroke="currentColor" stroke-width="2"/></symbol>
+ <symbol id="i-chart" viewBox="0 0 24 24"><path d="M4 19.5h16M5 15l4-5 4 3 6-7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+ <symbol id="i-list" viewBox="0 0 24 24"><path d="M9 6.5h11M9 12h11M9 17.5h11" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="4.8" cy="6.5" r="1.3" fill="currentColor"/><circle cx="4.8" cy="12" r="1.3" fill="currentColor"/><circle cx="4.8" cy="17.5" r="1.3" fill="currentColor"/></symbol>
+ <symbol id="i-gear" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3.2" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 2.8v2.6M12 18.6v2.6M2.8 12h2.6M18.6 12h2.6M5.5 5.5l1.9 1.9M16.6 16.6l1.9 1.9M5.5 18.5l1.9-1.9M16.6 7.4l1.9-1.9" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+ <symbol id="i-x" viewBox="0 0 24 24"><path d="M6.5 6.5l11 11M17.5 6.5l-11 11" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+ <symbol id="i-server" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="7" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><rect x="4" y="13" width="16" height="7" rx="2" fill="none" stroke="currentColor" stroke-width="2"/></symbol>
+ <symbol id="i-cloud" viewBox="0 0 24 24"><path d="M7 18.5h10a4 4 0 0 0 .4-8A6 6 0 0 0 6 10a4.3 4.3 0 0 0 1 8.5z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></symbol>
+ <symbol id="i-chip" viewBox="0 0 24 24"><rect x="7" y="7" width="10" height="10" rx="1.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M10 3.5V7M14 3.5V7M10 17v3.5M14 17v3.5M3.5 10H7M3.5 14H7M17 10h3.5M17 14h3.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+</svg>
+
+<div class="app">
+
+<header class="top">
+ <div class="brand">
+  <svg class="brand-mark" viewBox="0 0 40 40" aria-hidden="true"><circle cx="20" cy="20" r="15" fill="none" stroke="currentColor" stroke-width="3.5"/><path d="M20 8v7M20 25v7M8 20h7M25 20h7" stroke="currentColor" stroke-width="3.5" stroke-linecap="round"/><circle cx="20" cy="20" r="3.5" fill="currentColor"/></svg>
+  <div><b>MachineGuard</b><small>Motor MG-01, data sintetis</small></div>
+ </div>
+ <div class="clock"><b id="clock">--:--</b><span id="run-line">Menunggu data</span></div>
+ <ul class="links" aria-label="Status koneksi">
+  <li id="chip-server" class="chip"><svg aria-hidden="true"><use href="#i-server"/></svg><span class="chip-t">Server</span></li>
+  <li id="chip-cloud" class="chip"><svg aria-hidden="true"><use href="#i-cloud"/></svg><span class="chip-t">MQTT</span></li>
+  <li id="chip-edge" class="chip"><svg aria-hidden="true"><use href="#i-chip"/></svg><span class="chip-t">ESP32</span></li>
+ </ul>
+</header>
+
+<div class="notes">
+ <div id="demo-banner" class="note note-demo" hidden><b>Mode demo publik.</b> Simulator dan AI berjalan di browser ini; ESP32 dan MQTT diemulasikan. Sistem dua edge asli ada di video demo.</div>
+ <div id="offline-banner" class="note" hidden><b>Pratinjau offline.</b> MA10 dihitung laptop, jadi mode ini bukan bukti koneksi ESP32 atau cloud.</div>
+ <div id="error" class="note note-error" role="alert" hidden></div>
+ <div id="disconnected" class="note note-dark" role="alert" hidden><b>Koneksi ke server lokal terputus.</b> Angka yang tampil adalah data terakhir. Pastikan jendela CMD MachineGuard masih terbuka. <span id="disconnected-age"></span></div>
+</div>
+
+<main class="console">
+ <section class="hero" aria-label="Motor virtual">
+  <div class="hero-head">
+   <div id="status" class="status" aria-live="polite">
+    <svg class="status-icon" viewBox="0 0 48 48" aria-hidden="true"><path id="status-glyph" fill-rule="evenodd" fill="currentColor" d="M24 4a20 20 0 1 1 0 40a20 20 0 1 1 0-40z"/></svg>
+    <div class="status-text"><h1 id="status-title">Menghubungkan ke simulator…</h1><p id="status-detail">Tunggu sebentar.</p></div>
+   </div>
+   <p class="mission"><span>Skenario</span><b id="mission-title">Operasi normal</b></p>
+  </div>
+
+  <div id="status-count" class="countdown" hidden>
+   <svg viewBox="0 0 120 120" aria-hidden="true"><circle cx="60" cy="60" r="52" class="cd-track"/><circle id="count-ring" cx="60" cy="60" r="52" class="cd-fill" pathLength="100" stroke-dasharray="100 100" transform="rotate(-90 60 60)"/></svg>
+   <p class="cd-num"><b id="count-num">10</b><span>detik</span></p>
+   <p class="cd-text">lagi mesin dimatikan otomatis</p>
+   <button id="status-stop" class="btn btn-stop" hidden><svg aria-hidden="true"><use href="#i-stop"/></svg>Stop sekarang</button>
+  </div>
+
+  <figure class="machine">
+   <svg id="machine-svg" viewBox="40 40 760 380" preserveAspectRatio="xMidYMid meet" role="img" aria-labelledby="motor-title motor-desc">
+    <title id="motor-title">Motor listrik virtual</title>
+    <desc id="motor-desc">Kopling berputar mengikuti RPM, bodi bergetar mengikuti getaran, dan warna panas mengikuti suhu simulator. Cahaya di lantai mengikuti status mesin.</desc>
+    <defs>
+     <linearGradient id="enamel" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#6A9BE6"/><stop offset=".2" stop-color="#4277C8"/><stop offset=".6" stop-color="#2D5CA3"/><stop offset="1" stop-color="#173465"/></linearGradient>
+     <linearGradient id="enamelEnd" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#5487D2"/><stop offset=".5" stop-color="#28528F"/><stop offset="1" stop-color="#142D57"/></linearGradient>
+     <linearGradient id="steel" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#EEF2F6"/><stop offset=".4" stop-color="#9AA8B5"/><stop offset=".55" stop-color="#D3DBE2"/><stop offset="1" stop-color="#5B6876"/></linearGradient>
+     <linearGradient id="castIron" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#5E6A79"/><stop offset="1" stop-color="#2C343E"/></linearGradient>
+     <linearGradient id="grille" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#28303A"/><stop offset=".5" stop-color="#46515E"/><stop offset="1" stop-color="#28303A"/></linearGradient>
+     <radialGradient id="heat" cx=".5" cy=".55" r=".65"><stop offset="0" stop-color="#FF5A1F" stop-opacity=".85"/><stop offset=".6" stop-color="#FF8A00" stop-opacity=".45"/><stop offset="1" stop-color="#FFB000" stop-opacity="0"/></radialGradient>
+     <radialGradient id="floorGlow" cx=".5" cy=".5" r=".5"><stop offset="0" class="glow-stop" stop-opacity=".55"/><stop offset=".55" class="glow-stop" stop-opacity=".16"/><stop offset="1" class="glow-stop" stop-opacity="0"/></radialGradient>
+     <linearGradient id="rim" x1="0" y1="0" x2="1" y2="0"><stop offset="0" class="glow-stop" stop-opacity="0"/><stop offset=".5" class="glow-stop" stop-opacity=".9"/><stop offset="1" class="glow-stop" stop-opacity="0"/></linearGradient>
+     <filter id="lampGlow" x="-100%" y="-100%" width="300%" height="300%"><feGaussianBlur stdDeviation="4"/></filter>
+     <filter id="softShadow" x="-20%" y="-50%" width="140%" height="200%"><feGaussianBlur stdDeviation="10"/></filter>
+     <clipPath id="frameClip"><rect x="180" y="128" width="340" height="174" rx="20"/></clipPath>
+    </defs>
+    <ellipse cx="420" cy="360" rx="380" ry="62" fill="url(#floorGlow)"/>
+    <rect x="150" y="383" width="540" height="2" rx="1" fill="url(#rim)"/>
+    <ellipse cx="410" cy="362" rx="320" ry="18" fill="#04070A" opacity=".7" filter="url(#softShadow)"/>
+    <g id="motor-body">
+     <rect x="130" y="326" width="560" height="26" rx="4" fill="url(#castIron)"/>
+     <rect x="130" y="326" width="560" height="4" fill="#7E8B99"/>
+     <g fill="#C8D1D9" stroke="#3B4550" stroke-width="1.5"><circle cx="160" cy="339" r="5"/><circle cx="660" cy="339" r="5"/><circle cx="280" cy="339" r="5"/><circle cx="500" cy="339" r="5"/></g>
+     <path d="M232 296h76l10 30h-96z" fill="url(#enamelEnd)"/>
+     <path d="M422 296h76l10 30h-96z" fill="url(#enamelEnd)"/>
+     <path d="M110 162q0-22 22-24h56v164h-56q-22-2-22-24z" fill="url(#grille)"/>
+     <g stroke="#1A2028" stroke-width="3" opacity=".75"><path d="M124 168v124M136 160v140M148 158v144M160 158v144M172 158v144"/></g>
+     <rect x="180" y="128" width="340" height="174" rx="20" fill="url(#enamel)"/>
+     <g clip-path="url(#frameClip)">
+      <g stroke="#17366A" stroke-width="5" opacity=".55"><path d="M180 146H520M180 162H520M180 178H520M180 194H520M180 226H520M180 242H520M180 258H520M180 274H520M180 290H520"/></g>
+      <g stroke="#86AEEE" stroke-width="1.5" opacity=".45"><path d="M180 150H520M180 166H520M180 182H520M180 198H520M180 230H520M180 246H520M180 262H520M180 278H520"/></g>
+      <rect id="heat-glow" x="180" y="128" width="340" height="174" fill="url(#heat)" opacity="0"/>
+     </g>
+     <path d="M512 142h28q14 0 14 14v118q0 14-14 14h-28z" fill="url(#enamelEnd)"/>
+     <g fill="#B9C4CE"><circle cx="530" cy="152" r="3.5"/><circle cx="530" cy="278" r="3.5"/></g>
+     <rect x="300" y="92" width="96" height="40" rx="5" fill="url(#enamelEnd)"/>
+     <rect x="300" y="92" width="96" height="8" rx="4" fill="#5E8EDB"/>
+     <rect x="396" y="106" width="16" height="14" rx="3" fill="#3B4550"/>
+     <circle id="status-lamp-glow" cx="320" cy="114" r="9" fill="#3DD68C" filter="url(#lampGlow)" opacity=".9"/>
+     <circle id="status-lamp" cx="320" cy="114" r="5" fill="#3DD68C" stroke="#0E2A1C" stroke-width="1"/>
+     <path d="M230 128v-14a14 14 0 0 1 28 0v14" fill="none" stroke="url(#steel)" stroke-width="6"/>
+     <rect x="392" y="194" width="106" height="48" rx="4" fill="#DCE3E9" stroke="#8D9AA7"/>
+     <text x="445" y="214" text-anchor="middle" font-family="Plus Jakarta Sans, Arial, sans-serif" font-size="13" font-weight="700" fill="#2B3642">MG-01&#160;&#160;3~</text>
+     <text x="445" y="231" text-anchor="middle" font-family="Plus Jakarta Sans, Arial, sans-serif" font-size="11" fill="#4B5866">Data sintetis</text>
+     <rect x="554" y="204" width="98" height="22" fill="url(#steel)"/>
+     <rect x="590" y="204" width="26" height="5" fill="#59656F"/>
+     <rect x="648" y="174" width="44" height="82" rx="6" fill="url(#castIron)"/>
+     <rect x="648" y="174" width="44" height="9" rx="5" fill="#7D8997"/>
+     <ellipse cx="692" cy="215" rx="13" ry="41" fill="#8995A2" stroke="#3B4550" stroke-width="2"/>
+     <g transform="translate(692 215) scale(.32 1)"><g id="coupling"><circle r="30" fill="none" stroke="#2C343D" stroke-width="5"/><g fill="#EAF0F4" stroke="#2C343D" stroke-width="3"><circle cx="0" cy="-22" r="6"/><circle cx="19" cy="11" r="6"/><circle cx="-19" cy="11" r="6"/></g><rect x="-3" y="-30" width="6" height="14" fill="#F5B800"/></g></g>
+     <rect x="704" y="206" width="46" height="18" fill="url(#steel)" opacity=".9"/>
+    </g>
+    <g id="heat-waves" fill="none" stroke="#FF6A1F" stroke-width="4" stroke-linecap="round" opacity="0"><path d="M250 112q-14-14 0-28t0-28"/><path d="M350 80q-14-14 0-28t0-28"/><path d="M450 112q-14-14 0-28t0-28"/></g>
+    <g id="vib-marks" fill="none" stroke="#B49CFF" stroke-width="4" stroke-linecap="round" opacity="0"><path d="M96 200q-12 30 0 60"/><path d="M80 186q-18 44 0 88"/><path d="M770 200q12 30 0 60"/><path d="M786 186q18 44 0 88"/></g>
+   </svg>
+  </figure>
+
+  <div class="readouts">
+   <button class="readout" id="ro-temperature" data-open="sensor" style="--hue:var(--temp)"><span class="ro-k">Suhu<i id="hero-temperature-level">—</i></span><span class="ro-v"><b id="hero-temperature">—</b>°C</span></button>
+   <button class="readout" id="ro-vibration" data-open="sensor" style="--hue:var(--vib)"><span class="ro-k">Getaran<i id="hero-vibration-level">—</i></span><span class="ro-v"><b id="hero-vibration">—</b>g</span></button>
+   <button class="readout" id="ro-rpm" data-open="sensor" style="--hue:var(--rpm)"><span class="ro-k">Putaran<i id="hero-rpm-level">—</i></span><span class="ro-v"><b id="hero-rpm">—</b>RPM</span></button>
+  </div>
+ </section>
+
+ <section class="ai" aria-labelledby="ai-title">
+  <header class="ai-head"><h2 id="ai-title">Deteksi AI</h2><span>Isolation Forest + Mahalanobis</span></header>
+  <div class="ring-wrap">
+   <svg class="ring" viewBox="0 0 220 220" role="img" aria-label="Skor anomali AI, ambang 1,0 di puncak lingkaran">
+    <path class="ring-track" d="M47.8 172.2A88 88 0 1 1 172.2 172.2" pathLength="100"/>
+    <path id="ring-fill" class="ring-fill" d="M47.8 172.2A88 88 0 1 1 172.2 172.2" pathLength="100" stroke-dasharray="0 100"/>
+    <line class="ring-tick" x1="110" y1="9" x2="110" y2="35"/>
+    <text id="score-value" class="ring-score" x="110" y="118" text-anchor="middle">—</text>
+    <text class="ring-cap" x="110" y="146" text-anchor="middle">skor anomali</text>
+    <text class="ring-cap ring-th" x="110" y="198" text-anchor="middle">ambang 1,00</text>
+   </svg>
+  </div>
+  <p id="ai-word" class="ai-word">—</p>
+  <p id="ai-sub" class="ai-sub">Skor bukan probabilitas kerusakan.</p>
+  <dl class="metrics">
+   <div><dt id="edge-label">MA10 dari ESP32</dt><dd><b id="ma10-value">—</b>°C</dd><dd id="edge-detail" class="m-note">menunggu 10 suhu</dd></div>
+   <div><dt>RMS getaran</dt><dd><b id="rms-value">—</b>g</dd><dd id="rms-note" class="m-note">diolah laptop</dd></div>
+   <div><dt>Puncak FFT</dt><dd><b id="peak-value">—</b>Hz</dd><dd class="m-note">512 titik</dd></div>
+   <div><dt>Sampel</dt><dd><b id="sample-label">—</b></dd><dd id="sample-note" class="m-note">sesi ini</dd></div>
+  </dl>
+ </section>
+</main>
+
+<nav class="dock" aria-label="Kontrol mesin dan panel">
+ <div class="power">
+  <button id="start" class="btn btn-go"><svg aria-hidden="true"><use href="#i-play"/></svg>Start</button>
+  <button id="stop" class="btn btn-stop"><svg aria-hidden="true"><use href="#i-stop"/></svg>Stop</button>
+  <button id="reset" class="btn btn-ghost"><svg aria-hidden="true"><use href="#i-reset"/></svg>Reset</button>
+ </div>
+ <div class="tools">
+  <button class="tool" data-sheet="skenario" aria-controls="sheet-skenario" aria-expanded="false"><svg aria-hidden="true"><use href="#i-flask"/></svg><span>Skenario</span></button>
+  <button class="tool" data-sheet="sensor" aria-controls="sheet-sensor" aria-expanded="false"><svg aria-hidden="true"><use href="#i-sliders"/></svg><span>Sensor</span></button>
+  <button class="tool" data-sheet="grafik" aria-controls="sheet-grafik" aria-expanded="false"><svg aria-hidden="true"><use href="#i-chart"/></svg><span>Grafik</span></button>
+  <button class="tool" data-sheet="riwayat" aria-controls="sheet-riwayat" aria-expanded="false"><svg aria-hidden="true"><use href="#i-list"/></svg><span>Riwayat</span></button>
+  <button class="tool" data-sheet="sistem" aria-controls="sheet-sistem" aria-expanded="false"><svg aria-hidden="true"><use href="#i-gear"/></svg><span>Sistem</span></button>
+ </div>
+</nav>
+
+<section id="sheet-skenario" class="sheet" aria-labelledby="t-skenario" hidden>
+ <header class="sheet-head"><h2 id="t-skenario">Coba skenario</h2><button class="close" aria-label="Tutup panel"><svg aria-hidden="true"><use href="#i-x"/></svg></button></header>
+ <p id="mission-text" class="sheet-lead">Pilih gangguan untuk menguji alarm, AI, dan stop otomatis.</p>
+ <div class="mission-grid">
+  <button class="mission-btn" data-kind="overheating" style="--hue:var(--temp)"><b>Panas berlebih</b><span>Suhu naik bertahap melewati batas aman</span></button>
+  <button class="mission-btn" data-kind="unbalance" style="--hue:var(--vib)"><b>Getaran berlebih</b><span>Poros tidak seimbang, getaran naik</span></button>
+  <button class="mission-btn" data-kind="overspeed" style="--hue:var(--rpm)"><b>Putaran berlebih</b><span>Motor berputar di atas batas aman</span></button>
+  <button id="normal" class="mission-btn" style="--hue:var(--ok)"><b>Kembali normal</b><span>Hentikan gangguan dan gangguan acak</span></button>
+ </div>
+ <div class="sheet-row">
+  <label class="level">Tingkat gangguan <select id="preset-level"><option value="1">Rendah</option><option value="2" selected>Sedang</option><option value="3">Tinggi</option></select></label>
+  <label class="switch"><input id="random-faults" type="checkbox" checked><span class="track" aria-hidden="true"></span>Gangguan acak otomatis</label>
+ </div>
+ <p id="injection-label" class="hint">Gangguan yang disuntikkan simulator: tidak ada</p>
+</section>
+
+<section id="sheet-sensor" class="sheet" aria-labelledby="t-sensor" hidden>
+ <header class="sheet-head"><h2 id="t-sensor">Kendali sensor</h2><button class="close" aria-label="Tutup panel"><svg aria-hidden="true"><use href="#i-x"/></svg></button></header>
+ <p class="sheet-lead">Geser slider untuk mengatur nilai sendiri (Manual). Tekan Auto untuk mengembalikan ke simulator.</p>
+ <div class="controls">
+  <article class="control" data-sensor="temperature" style="--hue:var(--temp)">
+   <header><h3>Suhu</h3><span id="temperature-level" class="pill">—</span></header>
+   <div class="gauge-row"><svg class="gauge" viewBox="0 0 140 84" aria-hidden="true"><path class="g-bg" d="M14 74A56 56 0 0 1 126 74"/><path id="temperature-band" class="g-band" d=""/><line id="temperature-needle" class="g-needle" x1="70" y1="74" x2="70" y2="26"/><circle cx="70" cy="74" r="6" class="g-hub"/></svg><p class="big"><span id="temperature-reading">—</span><small>°C</small></p></div>
+   <label class="slider-label" for="temperature-slider"><span>Geser untuk mengatur</span><span id="temperature-range">Aman 20–40 °C</span></label>
+   <input id="temperature-slider" class="slider" type="range" min="0" max="100" step="0.5" value="30">
+   <div class="mode" role="group" aria-label="Mode suhu"><button data-mode="auto" aria-pressed="true">Auto</button><button data-mode="manual" aria-pressed="false">Manual</button></div>
+  </article>
+  <article class="control" data-sensor="vibration" style="--hue:var(--vib)">
+   <header><h3>Getaran</h3><span id="vibration-level" class="pill">—</span></header>
+   <div class="gauge-row"><svg class="gauge" viewBox="0 0 140 84" aria-hidden="true"><path class="g-bg" d="M14 74A56 56 0 0 1 126 74"/><path id="vibration-band" class="g-band" d=""/><line id="vibration-needle" class="g-needle" x1="70" y1="74" x2="70" y2="26"/><circle cx="70" cy="74" r="6" class="g-hub"/></svg><p class="big"><span id="vibration-reading">—</span><small>g</small></p></div>
+   <label class="slider-label" for="vibration-slider"><span>Geser untuk mengatur</span><span id="vibration-range">Aman 0–0,30 g</span></label>
+   <input id="vibration-slider" class="slider" type="range" min="0" max="1.2" step="0.01" value="0.18">
+   <div class="mode" role="group" aria-label="Mode getaran"><button data-mode="auto" aria-pressed="true">Auto</button><button data-mode="manual" aria-pressed="false">Manual</button></div>
+  </article>
+  <article class="control" data-sensor="rpm" style="--hue:var(--rpm)">
+   <header><h3>Putaran</h3><span id="rpm-level" class="pill">—</span></header>
+   <div class="gauge-row"><svg class="gauge" viewBox="0 0 140 84" aria-hidden="true"><path class="g-bg" d="M14 74A56 56 0 0 1 126 74"/><path id="rpm-band" class="g-band" d=""/><line id="rpm-needle" class="g-needle" x1="70" y1="74" x2="70" y2="26"/><circle cx="70" cy="74" r="6" class="g-hub"/></svg><p class="big"><span id="rpm-reading">—</span><small>RPM</small></p></div>
+   <label class="slider-label" for="rpm-slider"><span>Geser untuk mengatur</span><span id="rpm-range">Aman 1.200–1.800 RPM</span></label>
+   <input id="rpm-slider" class="slider" type="range" min="0" max="2800" step="10" value="1500">
+   <div class="mode" role="group" aria-label="Mode putaran"><button data-mode="auto" aria-pressed="true">Auto</button><button data-mode="manual" aria-pressed="false">Manual</button></div>
+  </article>
+ </div>
+</section>
+
+<section id="sheet-grafik" class="sheet" aria-labelledby="t-grafik" hidden>
+ <header class="sheet-head"><h2 id="t-grafik">Grafik</h2><button class="close" aria-label="Tutup panel"><svg aria-hidden="true"><use href="#i-x"/></svg></button></header>
+ <div class="charts">
+  <article class="chart-card">
+   <div class="chart-head"><h3>Suhu dan rata-rata ESP32 (MA10)</h3><p class="legend"><i class="k k-temp"></i>Suhu <i class="k k-ma"></i>MA10 <i class="k k-lim"></i>Batas</p></div>
+   <canvas id="temp-chart" role="img" aria-label="Grafik suhu dan rata-rata 10 sampel dalam derajat Celsius"></canvas>
+  </article>
+  <article class="chart-card">
+   <div class="chart-head"><h3>Gelombang getaran, 2 detik terakhir</h3></div>
+   <canvas id="wave-chart" role="img" aria-label="Waveform getaran terbaru selama dua detik"></canvas>
+  </article>
+ </div>
+</section>
+
+<section id="sheet-riwayat" class="sheet" aria-labelledby="t-riwayat" hidden>
+ <header class="sheet-head"><h2 id="t-riwayat">Riwayat kejadian</h2><button class="close" aria-label="Tutup panel"><svg aria-hidden="true"><use href="#i-x"/></svg></button></header>
+ <ol id="events" class="events"><li>Menunggu data…</li></ol>
+</section>
+
+<section id="sheet-sistem" class="sheet" aria-labelledby="t-sistem" hidden>
+ <header class="sheet-head"><h2 id="t-sistem">Sistem</h2><button class="close" aria-label="Tutup panel"><svg aria-hidden="true"><use href="#i-x"/></svg></button></header>
+ <ol class="flow" aria-label="Cara kerja">
+  <li><b>Laptop, edge A</b><span>Simulator motor, RMS dan FFT getaran, model AI</span></li>
+  <li><b>HiveMQ, cloud MQTT</b><span>Meneruskan suhu ke ESP32 dan MA10 kembali ke laptop</span></li>
+  <li><b>ESP32 di Wokwi, edge B</b><span>Rata-rata 10 suhu berurutan (MA10)</span></li>
+  <li><b>AI dan alarm</b><span>Alarm batas memakai aturan; AI menilai jarak dari pola normal</span></li>
+ </ol>
+ <div class="sys-grid">
+  <div>
+   <h3>Jeda stop otomatis</h3>
+   <div class="input-row"><label for="delay-input" class="sr-only">Jeda stop otomatis dalam detik</label><input id="delay-input" type="number" min="3" max="60" step="1" value="10"><button id="save-delay" class="btn btn-ghost">Simpan</button></div>
+   <p class="hint">Hitung mundur aktif selama gangguan tinggi. Start kembali dilakukan operator.</p>
+   <h3>Batas alarm</h3>
+   <form id="limits-form"><div class="limit-row limit-head"><span>Sensor</span><span>Minimum</span><span>Maksimum</span></div><div id="limit-fields"></div><button type="submit" class="btn btn-ghost">Simpan batas</button></form>
+   <p class="hint">Mengubah batas alarm tidak melatih ulang AI.</p>
+  </div>
+  <div>
+   <h3>Diagnostik edge dan model</h3>
+   <p id="diagnostic-text" class="mono">—</p>
+   <p id="ai-inputs" class="mono">—</p>
+   <p><a id="csv-link" href="/api/export.csv" download="machineguard-data.csv">Unduh data CSV</a></p>
+   <p class="hint">MachineGuard AI. Simulasi untuk tugas kuliah dengan data sintetis, bukan sistem keselamatan industri.</p>
+  </div>
+ </div>
+</section>
+
+</div>
+<div id="toasts" class="toasts" aria-live="polite"></div>
+</body>
+</html>
