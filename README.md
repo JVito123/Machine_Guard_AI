@@ -183,11 +183,10 @@ Daftar lengkapnya ada di [panduan mencoba](docs/panduan-mencoba.md#kalau-ada-mas
 
 ## Anggota kelompok
 
-| Nama | NIM | Peran |
-|---|---|---|
-| [Nama] | [NIM] | [Peran] |
-| [Nama] | [NIM] | [Peran] |
-| [Nama] | [NIM] | [Peran] |
-| [Nama] | [NIM] | [Peran] |
+| Nama | NIM |
+|---|---|
+| [Nama] | [NIM] |
+| [Nama] | [NIM] |
+| [Nama] | [NIM] | 
 
-Font Plus Jakarta Sans di `dashboard/fonts` memakai lisensi SIL Open Font License (`OFL.txt`).
+
