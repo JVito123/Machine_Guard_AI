@@ -185,7 +185,7 @@ Daftar lengkapnya ada di [panduan mencoba](docs/panduan-mencoba.md#kalau-ada-mas
 
 | Nama | NIM |
 |---|---|
-| John Vito Gracielo Talaksoru | 24060125140241 |
+| John Vito Gracielo Talaksoru | 24060125140200 |
 | Rajendra Ziven Abiseka | 24060125140241 |
 | Arkano Aqilla Tristanoza | 24060125130073 | 
 
