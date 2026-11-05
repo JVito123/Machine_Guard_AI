@@ -210,11 +210,11 @@ function render(s){
  $('ai-sub').textContent=score===null?(aiWaiting[s.ai]||''):s.ai==='ANOMALY'?`Sampel ${s.ai_sequence} jauh dari pola normal yang dipelajari model.`:`Sampel ${s.ai_sequence} sesuai pola normal. Skor bukan probabilitas kerusakan.`;
  $('edge-label').textContent=demo?'MA10 (emulasi)':s.mode==='offline'?'MA10 dari laptop':'MA10 dari ESP32';
  $('ma10-value').textContent=fmt(s.temp_ma10,2);
- $('edge-detail').textContent=s.edge==='RECEIVED'?`diterima ${fmt(s.feature_age_s,1)} dtk lalu`:s.edge==='STALE'?`basi, ${fmt(s.feature_age_s,0)} dtk tanpa balasan`:'menunggu 10 suhu';
+ $('edge-detail').textContent=s.edge==='RECEIVED'?`${fmt(s.feature_age_s,1)} dtk lalu`:s.edge==='STALE'?`basi ${fmt(s.feature_age_s,0)} dtk`:'tunggu 10 suhu';
  $('rms-value').textContent=fmt(s.rms,3);$('rms-note').textContent=demo?'diolah browser':'diolah laptop';
  $('peak-value').textContent=fmt(s.peak_hz,1);
  $('sample-label').textContent=s.sequence>=0?String(s.sequence):'—';
- $('sample-note').textContent=s.ai_sequence!==null&&s.ai_sequence!==undefined?`AI menilai sampel ${s.ai_sequence}`:'sesi ini';
+ $('sample-note').textContent=s.ai_sequence!==null&&s.ai_sequence!==undefined?`AI: sampel ${s.ai_sequence}`:'sesi ini';
  if(prevAi!==null&&prevAi!=='ANOMALY'&&s.ai==='ANOMALY')toast('AI mendeteksi anomali',`Skor ${fmt(score,2)} melewati ambang 1,0 pada sampel ${s.ai_sequence}.`,'var(--ai)');
  prevAi=s.ai;
 
