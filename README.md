@@ -10,7 +10,7 @@ Proyek tugas mata kuliah IoT, kelompok 16.
 
 - **Coba langsung di browser:** https://jvito123.github.io/Machine_Guard_AI/
 - **Panduan mencoba:** [docs/panduan-mencoba.md](docs/panduan-mencoba.md)
-- **Video demo:** [link video]
+- **Video demo:** https://drive.google.com/drive/folders/14qZubPTewtxmJTwfn75d4-Tab8Bz7IF9?usp=drive_link
 
 ## Ide
 
